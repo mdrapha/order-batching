@@ -1,4 +1,4 @@
-from src.produto import Produto
+from produto import Produto
 
 class Estoque:
 

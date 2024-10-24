@@ -1,4 +1,4 @@
-from src.caixa import Caixa
+from caixa import Caixa
 
 class Onda:
 
