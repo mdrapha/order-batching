@@ -10,11 +10,11 @@ class Caixa:
 
     def add_produto(self, produto: Produto):
         self.produtos.append(produto)
-        print(f'Produto {produto.get_sku()} adicionado na caixa {self.id_onda}')
+        print(f'Produto {produto.get_sku()} adicionado na caixa {self.id_caixa}')
 
     def remove_produto(self, produto: Produto):
         self.produtos.remove(produto)
-        print(f'Produto {produto.get_sku()} removido da caixa {self.id_onda}')
+        print(f'Produto {produto.get_sku()} removido da caixa {self.id_caixa}')
     
     def get_produtos(self):
         return self.produtos
