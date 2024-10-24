@@ -2,8 +2,9 @@ from produto import Produto
 
 class Caixa:
 
-    def __init__(self, classe_onda, id_onda):
+    def __init__(self, id_caixa, classe_onda, id_onda):
         self.produtos = []
+        self.id_caixa = id_caixa
         self.classe_onda = classe_onda
         self.id_onda = id_onda
 
