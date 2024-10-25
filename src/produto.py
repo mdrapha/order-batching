@@ -11,4 +11,4 @@ class Produto:
         return self.qtd
 
     def set_qtd(self, new_qtd):
-        self.preco = new_qtd
+        self.qtd = new_qtd

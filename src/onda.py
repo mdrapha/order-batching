@@ -22,4 +22,10 @@ class Onda:
     
     def set_id(self, new_id):
         self.id = new_id
+
+    def get_total_itens(self):
+        total = 0
+        for caixa in self.caixas:
+            total += caixa.get_total_itens()
+        return total
         

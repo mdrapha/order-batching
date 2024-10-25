@@ -10,11 +10,11 @@ class Caixa:
 
     def add_produto(self, produto: Produto):
         self.produtos.append(produto)
-        print(f'Produto {produto.get_sku()} adicionado na caixa {self.id_caixa}')
+        #print(f'Produto {produto.get_sku()} adicionado na caixa {self.id_caixa}')
 
     def remove_produto(self, produto: Produto):
         self.produtos.remove(produto)
-        print(f'Produto {produto.get_sku()} removido da caixa {self.id_caixa}')
+        #print(f'Produto {produto.get_sku()} removido da caixa {self.id_caixa}')
     
     def get_produtos(self):
         return self.produtos
@@ -27,4 +27,10 @@ class Caixa:
 
     def set_onda(self, new_onda):
         self.onda = new_onda
+
+    def get_total_itens(self):
+        total = 0
+        for produto in self.produtos:
+            total += produto.get_qtd()
+        return total
         
