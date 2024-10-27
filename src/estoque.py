@@ -27,4 +27,10 @@ class Estoque:
         for produto in self.produtos:
             total += produto.get_qtd()
         return total
+    
+    def get_produto(self, sku):
+        for produto in self.produtos:
+            if produto.get_sku() == sku:
+                return produto
+        return None
         
