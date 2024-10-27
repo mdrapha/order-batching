@@ -79,41 +79,6 @@ def test_remove_produto_caixa():
     assert len(caixa.get_produtos()) == 0
     assert caixa.get_total_itens() == 0
 
-def test_create_estoque():
-
-    andar = 1
-    corredor = 5
-
-    sku = "SKU_123"
-    qtd = 145
-    sku = int(sku.split('_')[1])
-
-    produto = Produto(sku, qtd)
-
-    estoque = Estoque(andar, corredor, produto, qtd)
-
-    assert estoque.get_andar() == 1
-    assert estoque.get_corredor() == 5
-    assert estoque.get_produto_sku() == 123
-    assert estoque.get_qtd() == 145
-
-def test_mudar_qtd_estoque():
-    
-    andar = 1
-    corredor = 5
-
-    sku = "SKU_123"
-    qtd = 145
-    sku = int(sku.split('_')[1])
-
-    produto = Produto(sku, qtd)
-
-    estoque = Estoque(andar, corredor, produto, qtd)
-
-    estoque.mudar_qtd(10)
-
-    assert estoque.get_qtd() == 155
-
 def test_create_onda():
 
     id_onda = 1
@@ -179,3 +144,51 @@ def test_add_produto_onda():
     onda.add_caixa(caixa)
 
     assert onda.get_total_itens() == 100
+
+def test_create_estoque():
+
+    andar = 1
+    corredor = 1
+
+    estoque = Estoque(andar, corredor)
+
+    assert estoque.get_andar() == 1
+    assert estoque.get_corredor() == 1
+
+def test_add_produto_estoque():
+    
+    andar = 1
+    corredor = 1
+
+    estoque = Estoque(andar, corredor)
+
+    sku = "SKU_1"
+    qtd = 100
+    sku = int(sku.split('_')[1])
+
+    produto = Produto(sku, qtd)
+
+    estoque.add_produto(produto)
+
+    assert len(estoque.get_produtos()) == 1
+    assert estoque.get_total_itens() == 100
+
+def test_remove_produto_estoque():
+        
+    andar = 1
+    corredor = 1
+
+    estoque = Estoque(andar, corredor)
+
+    sku = "SKU_1"
+    qtd = 100
+    sku = int(sku.split('_')[1])
+
+    produto = Produto(sku, qtd)
+
+    estoque.add_produto(produto)
+
+    estoque.remove_produto(produto)
+
+    assert len(estoque.get_produtos()) == 0
+    assert estoque.get_total_itens() == 0
