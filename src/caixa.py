@@ -7,6 +7,7 @@ class Caixa:
         self.id_caixa = id_caixa
         self.classe_onda = classe_onda
         self.id_onda = id_onda
+        self.andar = []
 
     def add_produto(self, produto: Produto):
         self.produtos.append(produto)
