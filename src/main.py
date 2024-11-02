@@ -55,18 +55,15 @@ while True:
     # print(caixas_picking)
 
     cmd = f"""
-        SELECT 
-            CAIXA_ID, 
-            COUNT(SKU) AS SKUS, 
-            SUM(PECAS) AS PECAS,
-            COUNT(DISTINCT ANDAR) AS ANDARES
-        FROM caixas_picking
-        GROUP BY CAIXA_ID""" 
-    caixas_info = pd.read_sql_query(cmd, db.conn)
-    caixas_info.to_sql("caixas_info", db.conn, if_exists="replace", index=False)
-    # print(caixas_info)
-
-    cmd = f"""
+        WITH caixas_info AS (
+            SELECT 
+                CAIXA_ID, 
+                COUNT(SKU) AS SKUS, 
+                SUM(PECAS) AS PECAS,
+                COUNT(DISTINCT ANDAR) AS ANDARES
+            FROM caixas_picking
+            GROUP BY CAIXA_ID
+        )
         SELECT 
             caixas_picking.CAIXA_ID, 
             caixas_picking.ANDAR, 
