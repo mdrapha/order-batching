@@ -44,9 +44,9 @@ while True:
     WHERE 
         rn = 1;
     """
-    picking = pd.read_sql_query(cmd, db.conn)
-    picking.to_sql("picking", db.conn, if_exists="replace", index=False)
-    # print(picking)
+    picking_temp = pd.read_sql_query(cmd, db.conn)
+    picking_temp.to_sql("picking_temp", db.conn, if_exists="replace", index=False)
+    # print(picking_temp)
 
     cmd = f"""
         WITH caixas_info AS (
@@ -55,28 +55,28 @@ while True:
                 COUNT(SKU) AS SKUS, 
                 SUM(PECAS) AS PECAS,
                 COUNT(DISTINCT ANDAR) AS ANDARES
-            FROM picking
+            FROM picking_temp
             GROUP BY CAIXA_ID
         )
         SELECT 
-            picking.CAIXA_ID, 
-            picking.ANDAR, 
-            picking.CORREDOR,
-            picking.SKU, 
-            picking.PECAS
-        FROM picking
+            picking_temp.CAIXA_ID, 
+            picking_temp.ANDAR, 
+            picking_temp.CORREDOR,
+            picking_temp.SKU, 
+            picking_temp.PECAS
+        FROM picking_temp
         JOIN caixas_info
-            ON picking.CAIXA_ID = caixas_info.CAIXA_ID
+            ON picking_temp.CAIXA_ID = caixas_info.CAIXA_ID
         ORDER BY 
             caixas_info.ANDARES ASC,
             caixas_info.PECAS ASC, 
-            picking.ANDAR ASC,
-            picking.CORREDOR ASC""" # parâmetros de priorização de caixas no ORDER BY
-    picking = pd.read_sql_query(cmd, db.conn)
-    picking.to_sql("picking", db.conn, if_exists="replace", index=False)
-    # print(picking)
+            picking_temp.ANDAR ASC,
+            picking_temp.CORREDOR ASC""" # parâmetros de priorização de caixas no ORDER BY
+    picking_temp = pd.read_sql_query(cmd, db.conn)
+    picking_temp.to_sql("picking_temp", db.conn, if_exists="replace", index=False)
+    # print(picking_temp)
 
-    for caixa, andar, corredor, sku, qtd_pecas in picking.values:
+    for caixa, andar, corredor, sku, qtd_pecas in picking_temp.values:
         cmd = f"""
             UPDATE estoque
             SET PECAS = PECAS - {qtd_pecas}
@@ -92,6 +92,21 @@ while True:
                 WHERE CAIXA_ID = {caixa}
                 AND SKU = '{sku}'"""
             db.query(cmd)   
+            
+    cmd = f"""
+        SELECT 
+            picking_temp.CAIXA_ID, 
+            picking_temp.ANDAR, 
+            picking_temp.CORREDOR, 
+            picking_temp.SKU, 
+            picking_temp.PECAS
+        FROM picking_temp
+        JOIN caixas
+        ON picking_temp.CAIXA_ID = caixas.CAIXA_ID
+        AND picking_temp.SKU = caixas.SKU
+        WHERE caixas.PECAS = 0"""
+    picking = pd.read_sql_query(cmd, db.conn)
+    picking.to_sql("picking", db.conn, if_exists="append", index=False)
     
     cmd = f"""
         DELETE FROM estoque
