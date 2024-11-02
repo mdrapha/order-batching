@@ -12,11 +12,6 @@ estoque.to_sql("estoque", db.conn, if_exists="replace", index=False)
 # print(caixas)
 # print(estoque)
 
-caixas_real = pd.read_sql_query("SELECT * FROM caixas", db.conn)
-estoque_real = pd.read_sql_query("SELECT * FROM estoque", db.conn)
-caixas_real.to_sql("caixas_real", db.conn, if_exists="replace", index=False)
-estoque_real.to_sql("estoque_real", db.conn, if_exists="replace", index=False)
-
 i = 1
 print(f"Iniciando iterações...")
 while True:
@@ -25,20 +20,19 @@ while True:
     cmd = f"""
     WITH ranked_caixas AS (
         SELECT 
-            caixas_real.CAIXA_ID, 
-            estoque_real.ANDAR, 
-            estoque_real.CORREDOR,
-            caixas_real.SKU,
-            caixas_real.PECAS,
+            caixas.CAIXA_ID, 
+            estoque.ANDAR, 
+            estoque.CORREDOR,
+            caixas.SKU,
+            caixas.PECAS,
             ROW_NUMBER() OVER (
-                PARTITION BY caixas_real.SKU, caixas_real.CAIXA_ID
-                ORDER BY estoque_real.ANDAR ASC, estoque_real.CORREDOR ASC
+                PARTITION BY caixas.SKU, caixas.CAIXA_ID
+                ORDER BY estoque.ANDAR ASC, estoque.CORREDOR ASC
             ) AS rn
-        FROM caixas_real
-        JOIN estoque_real 
-        ON caixas_real.SKU = estoque_real.SKU
-        AND caixas_real.PECAS <= estoque_real.PECAS
-        WHERE caixas_real.PECAS <= estoque_real.PECAS)
+        FROM caixas
+        JOIN estoque 
+        ON caixas.SKU = estoque.SKU
+        WHERE caixas.PECAS <= estoque.PECAS)
     SELECT 
         CAIXA_ID, 
         ANDAR, 
@@ -50,9 +44,9 @@ while True:
     WHERE 
         rn = 1;
     """
-    caixas_picking = pd.read_sql_query(cmd, db.conn)
-    caixas_picking.to_sql("caixas_picking", db.conn, if_exists="replace", index=False)
-    # print(caixas_picking)
+    picking = pd.read_sql_query(cmd, db.conn)
+    picking.to_sql("picking", db.conn, if_exists="replace", index=False)
+    # print(picking)
 
     cmd = f"""
         WITH caixas_info AS (
@@ -61,30 +55,30 @@ while True:
                 COUNT(SKU) AS SKUS, 
                 SUM(PECAS) AS PECAS,
                 COUNT(DISTINCT ANDAR) AS ANDARES
-            FROM caixas_picking
+            FROM picking
             GROUP BY CAIXA_ID
         )
         SELECT 
-            caixas_picking.CAIXA_ID, 
-            caixas_picking.ANDAR, 
-            caixas_picking.CORREDOR,
-            caixas_picking.SKU, 
-            caixas_picking.PECAS
-        FROM caixas_picking
+            picking.CAIXA_ID, 
+            picking.ANDAR, 
+            picking.CORREDOR,
+            picking.SKU, 
+            picking.PECAS
+        FROM picking
         JOIN caixas_info
-            ON caixas_picking.CAIXA_ID = caixas_info.CAIXA_ID
+            ON picking.CAIXA_ID = caixas_info.CAIXA_ID
         ORDER BY 
             caixas_info.ANDARES ASC,
             caixas_info.PECAS ASC, 
-            caixas_picking.ANDAR ASC,
-            caixas_picking.CORREDOR ASC""" # parâmetros de priorização de caixas no ORDER BY
-    caixas_picking = pd.read_sql_query(cmd, db.conn)
-    caixas_picking.to_sql("caixas_picking", db.conn, if_exists="replace", index=False)
-    # print(caixas_picking)
+            picking.ANDAR ASC,
+            picking.CORREDOR ASC""" # parâmetros de priorização de caixas no ORDER BY
+    picking = pd.read_sql_query(cmd, db.conn)
+    picking.to_sql("picking", db.conn, if_exists="replace", index=False)
+    # print(picking)
 
-    for caixa, andar, corredor, sku, qtd_pecas in caixas_picking.values:
+    for caixa, andar, corredor, sku, qtd_pecas in picking.values:
         cmd = f"""
-            UPDATE estoque_real
+            UPDATE estoque
             SET PECAS = PECAS - {qtd_pecas}
             WHERE SKU = '{sku}' 
             AND ANDAR = {andar}
@@ -93,19 +87,19 @@ while True:
         rows = db.query(cmd)
         if rows > 0:
             cmd = f"""
-                UPDATE caixas_real
+                UPDATE caixas
                 SET PECAS = PECAS - {qtd_pecas}
                 WHERE CAIXA_ID = {caixa}
                 AND SKU = '{sku}'"""
             db.query(cmd)   
     
     cmd = f"""
-        DELETE FROM estoque_real
+        DELETE FROM estoque
         WHERE PECAS = 0"""
     db.query(cmd)
     
     cmd = f"""
-        DELETE FROM caixas_real
+        DELETE FROM caixas
         WHERE PECAS = 0"""
     rows = db.query(cmd)
     
@@ -119,7 +113,7 @@ while True:
     
 cmd = f"""
     SELECT COUNT(*)
-    FROM caixas_real"""
+    FROM caixas"""
 res = db.query(cmd)
 print(f"Pedidos restantes: {res[0][0]}")
 
