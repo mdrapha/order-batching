@@ -13,6 +13,7 @@ estoque.to_sql("estoque", db.conn, if_exists="replace", index=False)
 # print(caixas)
 # print(estoque)
 
+i = 1
 print(f"Iniciando iterações...")
 while True:
     time_start = time.time()
