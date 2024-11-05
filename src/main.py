@@ -13,7 +13,6 @@ estoque.to_sql("estoque", db.conn, if_exists="replace", index=False)
 # print(caixas)
 # print(estoque)
 
-i = 1
 print(f"Iniciando iterações...")
 while True:
     time_start = time.time()
@@ -120,7 +119,7 @@ while True:
         WHERE PECAS = 0"""
     rows = db.query(cmd)
     
-    if rows == 0 or i == 20:
+    if rows == 0:
         break
     
     print(f"Pedidos processados: {rows}")
