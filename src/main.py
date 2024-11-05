@@ -70,6 +70,7 @@ while True:
         ORDER BY 
             caixas_info.ANDARES ASC,
             caixas_info.PECAS ASC, 
+            caixas_info.SKUS ASC,
             picking_temp.ANDAR ASC,
             picking_temp.CORREDOR ASC""" # parâmetros de priorização de caixas no ORDER BY
     picking_temp = pd.read_sql_query(cmd, db.conn)
