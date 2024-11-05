@@ -5,6 +5,7 @@ import time
 db = SQLiteDB()
 db.connect()
 
+db.query("DROP TABLE IF EXISTS picking")
 caixas = pd.read_csv("data/caixas.csv")
 estoque = pd.read_csv("data/estoque.csv")
 caixas.to_sql("caixas", db.conn, if_exists="replace", index=False)
@@ -68,8 +69,8 @@ while True:
         JOIN caixas_info
             ON picking_temp.CAIXA_ID = caixas_info.CAIXA_ID
         ORDER BY 
+            caixas_info.PECAS DESC, 
             caixas_info.ANDARES ASC,
-            caixas_info.PECAS ASC, 
             caixas_info.SKUS ASC,
             picking_temp.ANDAR ASC,
             picking_temp.CORREDOR ASC""" # parâmetros de priorização de caixas no ORDER BY
