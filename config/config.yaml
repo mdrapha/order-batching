@@ -1,0 +1,7 @@
+# Parâmetros de Configuração
+
+max_combinations: 1000  # Número máximo de combinações a considerar
+top_corredores_limit: 5  # Limite de corredores a considerar por SKU
+max_iterations: 5        # Número máximo de iterações para processamento das caixas
+data_directory: "../data" # Diretório onde estão os arquivos de dados
+output_csv: "resultados.csv" # Nome do arquivo CSV de saída
