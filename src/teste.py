@@ -32,7 +32,7 @@ def generate_combinations(sku_list, sku_corredores, max_combinations=100):
         # Priorizar corredores com mais peças e no andar mais baixo
         corredores.sort(key=lambda x: (-x['PECAS'], x['ANDAR']))
         # Limitar a considerar apenas os top N corredores por SKU
-        top_corredores = corredores[:3]  # Considerar os 3 melhores corredores
+        top_corredores = corredores[:5]  # Considerar os 3 melhores corredores
         corredores_por_sku.append(top_corredores)
     # Gerar combinações limitadas usando iteradores
     combinations = itertools.islice(itertools.product(*corredores_por_sku), max_combinations)
@@ -122,7 +122,7 @@ def process_caixa(caixa_id, caixas, estoque, sku_corredores):
             return caixa_id, []
         
         solucoes_viaveis.sort(key=lambda x: x['distancia'])
-        melhores_solucoes_caixa = solucoes_viaveis[:3]
+        melhores_solucoes_caixa = solucoes_viaveis[:5]
         return caixa_id, melhores_solucoes_caixa
 
 # Carregar os dados das caixas e do estoque
