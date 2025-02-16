@@ -19,12 +19,22 @@ class Wave:
     def __init__(self, wave_class, debug_enabled=False):
         self.debug_logger = DebugLogger(enable=debug_enabled)
         self.wave_class = wave_class
-        self.boxes = []  # Cada caixa é montada em apenas uma onda.
+        self.boxes = []  # Cada caixa deve ser montada em apenas uma onda.
         self.total_pieces = 0
         self.floors = defaultdict(default_floor)
         
     def add_box(self, box, simulate=False):
         self.debug_logger.log(f"Adicionando caixa {box['caixa_id']} à onda {self.wave_class} (simulate={simulate})")
+        # Se não for simulação, verifique se a caixa já foi alocada em alguma onda.
+        if not simulate and box.get("assigned_wave") is not None:
+            self.debug_logger.log(f"Caixa {box['caixa_id']} já possui uma onda atribuída; não será adicionada.")
+            return False
+        # Se a caixa já estiver presente nesta onda, não a adiciona novamente.
+        if box in self.boxes:
+            self.debug_logger.log(f"Caixa {box['caixa_id']} já está presente nesta onda; não será adicionada novamente.")
+            return False
+
+        # Procede com a adição
         self.boxes.append(box)
         self.total_pieces += box['pieces']
         for floor, corridor, alloc_qty in box['corridors']:
@@ -32,6 +42,7 @@ class Wave:
             self.floors[floor][side][corridor] += alloc_qty
         if not simulate:
             box["assigned_wave"] = self
+        return True
 
     def remove_box(self, box, simulate=False):
         self.debug_logger.log(f"Removendo caixa {box['caixa_id']} da onda {self.wave_class} (simulate={simulate})")
@@ -43,7 +54,7 @@ class Wave:
                 self.floors[floor][side][corridor] -= alloc_qty
                 if self.floors[floor][side][corridor] <= 0:
                     del self.floors[floor][side][corridor]
-            # Remove o andar se não houver mais caixas (sem entradas em 'par' e 'impar')
+            # Remove o andar se não houver mais entradas em 'par' e 'impar'
             floors_to_remove = []
             for f, sides in self.floors.items():
                 if not sides['par'] and not sides['impar']:
@@ -52,8 +63,10 @@ class Wave:
                 del self.floors[f]
             if not simulate:
                 box["assigned_wave"] = None
+            return True
         else:
             self.debug_logger.log(f"Caixa {box['caixa_id']} não encontrada na onda {self.wave_class}")
+            return False
 
     @property
     def corridors(self):
