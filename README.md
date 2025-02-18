@@ -7,11 +7,6 @@ Este repositório contém a implementação de uma abordagem multi-objetiva base
 - [Introdução](#introdução)
 - [Estrutura do Repositório](#estrutura-do-repositório)
 - [Pré-Requisitos e Dependências](#pré-requisitos-e-dependências)
-- [Como Executar](#como-executar)
-- [Parâmetros Principais](#parâmetros-principais)
-- [Dados de Entrada](#dados-de-entrada)
-- [Saídas Geradas](#saídas-geradas)
-- [Resultados e Referências](#resultados-e-referências)
 - [Autores](#autores)
 - [Licença](#licença)
 
@@ -37,3 +32,12 @@ A separação de pedidos (order picking) é uma etapa fundamental na cadeia de s
 Para instalar as dependências, execute:
 ```bash
 pip install -r requirements.txt
+
+
+## Autores
+Davi Seiji Kawai dos Santos <davi.seiji@unifesp.br>
+Enzo Reis de Oliveira <enzo.oliveira@unifesp.br>
+Juan Marcos Martins <juan.martins@unifesp.br>
+Marco Antonio Coral dos Santos <macsantos23@unifesp.br>
+Raphael Damasceno Rocha de Moraes <raphael.damasceno@unifesp.br>
+Sávio Augusto Machado Araujo <savio.augusto@unifesp.br>
